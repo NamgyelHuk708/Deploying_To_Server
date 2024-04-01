@@ -1,49 +1,57 @@
 package main
 
-
 import (
     "fmt"
     "log"
     "net/http"
 )
 
-func formHandler(w http.ResponseWriter, r *http.Request) {
-    if err := r.ParseForm(); err != nil {
-        fmt.Fprintf(w, "ParseForm() err: %v", err)
-        return
-    }
-    fmt.Fprintf(w, "POST request successful")
-    name := r.FormValue("name")
-    address := r.FormValue("address")
-    fmt.Fprintf(w, "Name = %s\n", name)
-    fmt.Fprintf(w, "Address = %s\n", address)
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-    if r.URL.Path != "/hello" {
-        http.Error(w, "404 not found.", http.StatusNotFound)
-        return
-    }
-
-    if r.Method != "GET" {
-        http.Error(w, "Method is not supported.", http.StatusNotFound)
-        return
-    }
-
-
-    fmt.Fprintf(w, "Hello!")
-}
-
-
 func main() {
-    fileServer := http.FileServer(http.Dir("./static"))
-    http.Handle("/", fileServer)
-    http.HandleFunc("/form", formHandler)
+
+    fmt.Printf("Sever listening at port 8080\n")
+
+    // ? Create a home page handler
+    http.HandleFunc("/", homePageHandler)
+    // ? Create a hello handler
     http.HandleFunc("/hello", helloHandler)
+    http.HandleFunc("/login", loginHandler)
+    http.HandleFunc("/auth", authHandler)
 
-
-    fmt.Printf("Starting server at port 8080\n")
+    // ? Start the server, if any error, console log it
     if err := http.ListenAndServe(":8080", nil); err != nil {
         log.Fatal(err)
     }
+}
+
+// ? Handler for the hello route
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprint(w, "Hello Page!")
+}
+
+// ? Handler for the home route
+func homePageHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprint(w, "Home Page!")
+
+}
+
+// func homePageHandler(w http.ResponseWriter, r *http.Request) {
+//     http.ServeFile(w, r, "./form.html")
+
+// }
+
+// func helloHandler(w http.ResponseWriter, r *http.Request) {
+//     http.ServeFile(w, r, "Hello Page!")
+
+// }
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+    http.ServeFile(w, r, "./login.html")
+}
+
+// func authHandler(w. http.ResponseWritten, r http.Request){
+
+// }
+
+func authHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprint(w, "Hello Page!")
 }
